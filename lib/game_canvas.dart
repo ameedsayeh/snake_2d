@@ -14,7 +14,7 @@ class _GameCanvasState extends State<GameCanvas> {
       padding: const EdgeInsets.all(16.0),
       child: Center(
         child: GameGrid(
-          gridSize: CanvasSize(20, 20),
+          gridSize: CanvasSize(10, 10),
         ),
       ),
     );
