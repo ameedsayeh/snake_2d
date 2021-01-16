@@ -64,31 +64,43 @@ class _GameGridState extends State<GameGrid> {
         case AxisDirection.up:
           if (_yValue > 0) {
             _yValue -= 1;
+          } else {
+            _isLost = true;
+            _timer.cancel();
           }
           break;
         case AxisDirection.down:
           if (_yValue < widget.gridSize.height - 1) {
             _yValue += 1;
+          } else {
+            _isLost = true;
+            _timer.cancel();
           }
           break;
         case AxisDirection.right:
           if (_xValue < widget.gridSize.width - 1) {
             _xValue += 1;
+          } else {
+            _isLost = true;
+            _timer.cancel();
           }
           break;
         case AxisDirection.left:
-          if (_yValue > 0) {
+          if (_xValue > 0) {
             _xValue -= 1;
+          } else {
+            _isLost = true;
+            _timer.cancel();
           }
           break;
       }
       _canUpdateDirection = true;
 
-      if (_gridHistory[_yValue][_xValue] > 0) {
+      if (_gridHistory[_yValue][_xValue] > 0 && !_isLost) {
         // lose state
         _isLost = true;
         _timer.cancel();
-      } else {
+      } else if (!_isLost) {
         setState(() {});
       }
     });
@@ -130,8 +142,9 @@ class _GameGridState extends State<GameGrid> {
         height: size.height,
       );
     } else if (_gridHistory[r][c] > 0) {
-      _gridHistory[r][c] -= 1;
-
+      if (!_isLost) {
+        _gridHistory[r][c] -= 1;
+      }
       return Container(
         decoration: BoxDecoration(
           border: Border.all(
