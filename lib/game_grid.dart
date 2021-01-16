@@ -23,11 +23,23 @@ class _GameGridState extends State<GameGrid> {
     );
   }
 
+  _directionUpdate(details) {
+    if (details.delta.dx > 10 && _direction != AxisDirection.left) {
+      _direction = AxisDirection.right;
+    } else if (details.delta.dx < -10 && _direction != AxisDirection.right) {
+      _direction = AxisDirection.left;
+    } else if (details.delta.dy > 10 && _direction != AxisDirection.up) {
+      _direction = AxisDirection.down;
+    } else if (details.delta.dy < -10 && _direction != AxisDirection.down) {
+      _direction = AxisDirection.up;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
 
-    Timer.periodic(Duration(seconds: 1), (timer) {
+    Timer.periodic(Duration(milliseconds: 500), (timer) {
       setState(() {
         switch (_direction) {
           case AxisDirection.up:
@@ -52,6 +64,7 @@ class _GameGridState extends State<GameGrid> {
     final cellSize = this.calculateCellSize(context);
 
     return GestureDetector(
+      onPanUpdate: _directionUpdate,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(
@@ -70,11 +83,12 @@ class _GameGridState extends State<GameGrid> {
     if (c == _xValue && r == _yValue) {
       return Container(
         decoration: BoxDecoration(
-            border: Border.all(
-              width: 1,
-              color: Colors.black87.withAlpha(40),
-            ),
-            color: Colors.black),
+          border: Border.all(
+            width: 1,
+            color: Colors.black87.withAlpha(40),
+          ),
+          color: Colors.black,
+        ),
         width: size.width,
         height: size.height,
       );
