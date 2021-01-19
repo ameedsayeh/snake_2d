@@ -9,10 +9,10 @@ class GameGrid extends StatefulWidget {
   const GameGrid({Key key, this.gridSize}) : super(key: key);
 
   @override
-  _GameGridState createState() => _GameGridState();
+  GameGridState createState() => GameGridState();
 }
 
-class _GameGridState extends State<GameGrid> {
+class GameGridState extends State<GameGrid> {
   int _xValue = 0;
   int _yValue = 0;
   bool _canUpdateDirection = true;
@@ -23,7 +23,24 @@ class _GameGridState extends State<GameGrid> {
   Timer _timer;
   bool _isLost = false;
 
-  Size calculateCellSize(context) {
+  void startGame() {
+    if (_timer != null) {
+      _timer.cancel();
+    }
+    _xValue = 0;
+    _yValue = 0;
+    _canUpdateDirection = true;
+    _snakeLength = 5;
+    _direction = AxisDirection.down;
+
+    _generateGridHistory();
+
+    _isLost = false;
+
+    _startTimer();
+  }
+
+  Size _calculateCellSize(context) {
     return Size.square(
       (MediaQuery.of(context).size.width - 2 * 16.0) / widget.gridSize.width,
     );
@@ -53,12 +70,7 @@ class _GameGridState extends State<GameGrid> {
         (r) => List<int>.generate(widget.gridSize.width, (c) => 0));
   }
 
-  @override
-  void initState() {
-    super.initState();
-
-    _generateGridHistory();
-
+  _startTimer() {
     _timer = Timer.periodic(Duration(milliseconds: 500), (timer) {
       switch (_direction) {
         case AxisDirection.up:
@@ -100,15 +112,21 @@ class _GameGridState extends State<GameGrid> {
         // lose state
         _isLost = true;
         _timer.cancel();
-      } else if (!_isLost) {
-        setState(() {});
       }
+      setState(() {});
     });
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    startGame();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final cellSize = this.calculateCellSize(context);
+    final cellSize = _calculateCellSize(context);
 
     return GestureDetector(
       onPanUpdate: _directionUpdate,
